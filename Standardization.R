@@ -62,9 +62,11 @@ slz.s <- slz_fil %>% group_by(Speaker) %>%
 ### Adding variable to sort the data into initial, middle, and end of the
 ### vowels
 slz.s <- slz.s %>% 
-  mutate(Position = case_when(time < "04" ~ 1,
-                              time < "07" ~ 2,
-                              time <= "10" ~ 3))
+  mutate(Position = case_when(time <= 2 ~ 1,
+                              time <= 4 ~ 2,
+                              time <= 6 ~ 3,
+                              time <= 8 ~ 4,
+                              TRUE ~ 5))
 slz.s$Position <- slz.s$Position %>% factor()
 
 ### Calculating Residual h1
@@ -81,3 +83,4 @@ energy.factor <- fixef(model.position.h1c.covariant)[2]
 slz.s$H1c.resid = slz.s$h1cz - slz.s$energyz * energy.factor
 
 write.csv(slz.s, file = "data/processed/slz_cleaned.csv", row.names = F, fileEncoding = "UTF-8")
+

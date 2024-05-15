@@ -17,4 +17,16 @@ library(readr)
 source("R/gamm_hacks.R")
 
 # Loading Data
-slz_fil <- read.csv("data/interim/slz_filtered.csv", header = TRUE)
+slz.clean <- read.csv("data/processed/slz_cleaned.csv", header = TRUE)
+
+### convert certain columns into factors.
+slz.clean$Phonation <- factor(slz.clean$Phonation, levels = c("modal", 
+                                                              "breathy", 
+                                                              "checked", 
+                                                              "laryngealized"))
+slz.clean$Speaker <- slz.clean$Speaker %>% factor()
+slz.clean$Word <- slz.clean$Word %>% factor()
+slz.clean$Vowel <- slz.clean$Vowel %>% factor()
+slz.clean$Iter <- slz.clean$Iter %>% factor()
+slz.clean$Tone <- slz.clean$Tone %>% factor()
+slz.clean$Position <- slz.clean$Position %>% factor()
