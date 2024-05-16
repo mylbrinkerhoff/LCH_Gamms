@@ -30,3 +30,4 @@ slz.clean$Vowel <- slz.clean$Vowel %>% factor()
 slz.clean$Iter <- slz.clean$Iter %>% factor()
 slz.clean$Tone <- slz.clean$Tone %>% factor()
 slz.clean$Position <- slz.clean$Position %>% factor()
+
