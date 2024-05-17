@@ -14,6 +14,7 @@ library(tidyverse)
 library(viridis)
 library(reshape2)
 library(readr)
+library(lme4)
 source("R/gamm_hacks.R")
 
 # Loading Data
