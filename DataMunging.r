@@ -5,7 +5,7 @@
 ###   M. Brinkerhoff  * UCSC  * 2024-05-14 (T)
 ###   
 ####################################################################
-
+melt
 # Libraries that are required
 library(ggplot2)
 library(mgcv)
@@ -69,7 +69,7 @@ slz_h1h2c_trans <- melt(slz_h1h2c, id = c("Speaker",
                                         "Duration",
                                         "idnum"))
 
-slz_h1h2c_trans$time <- str_sub(slz_h1h2c_trans$variable,-2,-1)
+slz_h1h2c_trans$measurement.no <- str_sub(slz_h1h2c_trans$variable,-2,-1)
 slz_h1h2c_trans <-  slz_h1h2c_trans %>%
   rename(h1h2c = value) %>%
   select(-variable)
@@ -82,7 +82,7 @@ slz_h1c <-  slz %>%
          H1c_means010)
 
 slz_h1c_trans  <-  melt(slz_h1c, id = c("idnum"))
-slz_h1c_trans$time  <-  str_sub(slz_h1c_trans$variable,-2,-1)
+slz_h1c_trans$measurement.no  <-  str_sub(slz_h1c_trans$variable,-2,-1)
 slz_h1c_trans <-  slz_h1c_trans %>%
   rename(h1c = value)%>%
   select(-variable)
@@ -95,7 +95,7 @@ slz_h2h4c <-  slz %>%
          H2H4c_means010)
 
 slz_h2h4c_trans  <-  melt(slz_h2h4c, id = c("idnum"))
-slz_h2h4c_trans$time  <-  str_sub(slz_h2h4c_trans$variable,-2,-1)
+slz_h2h4c_trans$measurement.no  <-  str_sub(slz_h2h4c_trans$variable,-2,-1)
 slz_h2h4c_trans <-  slz_h2h4c_trans %>%
   rename(h2h4c = value)%>%
   select(-variable)
@@ -108,7 +108,7 @@ slz_h1a1c <-  slz %>%
          H1A1c_means010)
 
 slz_h1a1c_trans  <-  melt(slz_h1a1c, id = c("idnum"))
-slz_h1a1c_trans$time  <-  str_sub(slz_h1a1c_trans$variable,-2,-1)
+slz_h1a1c_trans$measurement.no  <-  str_sub(slz_h1a1c_trans$variable,-2,-1)
 slz_h1a1c_trans <-  slz_h1a1c_trans %>%
   rename(h1a1c = value)%>%
   select(-variable)
@@ -121,7 +121,7 @@ slz_h1a2c <-  slz %>%
          H1A2c_means010)
 
 slz_h1a2c_trans  <-  melt(slz_h1a2c, id = c("idnum"))
-slz_h1a2c_trans$time  <-  str_sub(slz_h1a2c_trans$variable,-2,-1)
+slz_h1a2c_trans$measurement.no  <-  str_sub(slz_h1a2c_trans$variable,-2,-1)
 slz_h1a2c_trans <-  slz_h1a2c_trans %>%
   rename(h1a2c = value)%>%
   select(-variable)
@@ -134,7 +134,7 @@ slz_h1a3c <-  slz %>%
          H1A3c_means010)
 
 slz_h1a3c_trans  <-  melt(slz_h1a3c, id = c("idnum"))
-slz_h1a3c_trans$time  <-  str_sub(slz_h1a3c_trans$variable,-2,-1)
+slz_h1a3c_trans$measurement.no  <-  str_sub(slz_h1a3c_trans$variable,-2,-1)
 slz_h1a3c_trans <-  slz_h1a3c_trans %>%
   rename(h1a3c = value)%>%
   select(-variable)
@@ -147,7 +147,7 @@ slz_h2h4c <-  slz %>%
          H2H4c_means010)
 
 slz_h2h4c_trans  <-  melt(slz_h2h4c, id = c("idnum"))
-slz_h2h4c_trans$time  <-  str_sub(slz_h2h4c_trans$variable,-2,-1)
+slz_h2h4c_trans$measurement.no  <-  str_sub(slz_h2h4c_trans$variable,-2,-1)
 slz_h2h4c_trans <-  slz_h2h4c_trans %>%
   rename(h2h4c = value)%>%
   select(-variable)
@@ -160,7 +160,7 @@ slz_h42Kc <-  slz %>%
          H42Kc_means010)
 
 slz_h42Kc_trans  <-  melt(slz_h42Kc, id = c("idnum"))
-slz_h42Kc_trans$time  <-  str_sub(slz_h42Kc_trans$variable,-2,-1)
+slz_h42Kc_trans$measurement.no  <-  str_sub(slz_h42Kc_trans$variable,-2,-1)
 slz_h42Kc_trans <-  slz_h42Kc_trans %>%
   rename(h42Kc = value)%>%
   select(-variable)
@@ -173,7 +173,7 @@ slz_h2Kh5Kc <-  slz %>%
          H2KH5Kc_means010)
 
 slz_h2Kh5Kc_trans  <-  melt(slz_h2Kh5Kc, id = c("idnum"))
-slz_h2Kh5Kc_trans$time  <-  str_sub(slz_h2Kh5Kc_trans$variable,-2,-1)
+slz_h2Kh5Kc_trans$measurement.no  <-  str_sub(slz_h2Kh5Kc_trans$variable,-2,-1)
 slz_h2Kh5Kc_trans <-  slz_h2Kh5Kc_trans %>%
   rename(h2Kh5Kc = value)%>%
   select(-variable)
@@ -186,7 +186,7 @@ slz_cpp <-  slz %>%
          CPP_means010)
 
 slz_cpp_trans  <-  melt(slz_cpp, id = c("idnum"))
-slz_cpp_trans$time  <-  str_sub(slz_cpp_trans$variable,-2,-1)
+slz_cpp_trans$measurement.no  <-  str_sub(slz_cpp_trans$variable,-2,-1)
 slz_cpp_trans <-  slz_cpp_trans %>%
   rename(cpp = value)%>%
   select(-variable)
@@ -199,7 +199,7 @@ slz_energy <-  slz %>%
          Energy_means010)
 
 slz_energy_trans  <-  melt(slz_energy, id = c("idnum"))
-slz_energy_trans$time  <-  str_sub(slz_energy_trans$variable,-2,-1)
+slz_energy_trans$measurement.no  <-  str_sub(slz_energy_trans$variable,-2,-1)
 slz_energy_trans <-  slz_energy_trans %>%
   rename(energy = value)%>%
   select(-variable)
@@ -212,7 +212,7 @@ slz_hnr05 <-  slz %>%
          HNR05_means010)
 
 slz_hnr05_trans  <-  melt(slz_hnr05, id = c("idnum"))
-slz_hnr05_trans$time  <-  str_sub(slz_hnr05_trans$variable,-2,-1)
+slz_hnr05_trans$measurement.no  <-  str_sub(slz_hnr05_trans$variable,-2,-1)
 slz_hnr05_trans <-  slz_hnr05_trans %>%
   rename(hnr05 = value)%>%
   select(-variable)
@@ -225,7 +225,7 @@ slz_hnr15 <-  slz %>%
          HNR15_means010)
 
 slz_hnr15_trans  <-  melt(slz_hnr15, id = c("idnum"))
-slz_hnr15_trans$time  <-  str_sub(slz_hnr15_trans$variable,-2,-1)
+slz_hnr15_trans$measurement.no  <-  str_sub(slz_hnr15_trans$variable,-2,-1)
 slz_hnr15_trans <-  slz_hnr15_trans %>%
   rename(hnr15 = value)%>%
   select(-variable)
@@ -238,7 +238,7 @@ slz_hnr25 <-  slz %>%
          HNR25_means010)
 
 slz_hnr25_trans  <-  melt(slz_hnr25, id = c("idnum"))
-slz_hnr25_trans$time  <-  str_sub(slz_hnr25_trans$variable,-2,-1)
+slz_hnr25_trans$measurement.no  <-  str_sub(slz_hnr25_trans$variable,-2,-1)
 slz_hnr25_trans <-  slz_hnr25_trans %>%
   rename(hnr25 = value)%>%
   select(-variable)
@@ -251,7 +251,7 @@ slz_hnr35 <-  slz %>%
          HNR35_means010)
 
 slz_hnr35_trans  <-  melt(slz_hnr35, id = c("idnum"))
-slz_hnr35_trans$time  <-  str_sub(slz_hnr35_trans$variable,-2,-1)
+slz_hnr35_trans$measurement.no  <-  str_sub(slz_hnr35_trans$variable,-2,-1)
 slz_hnr35_trans <-  slz_hnr35_trans %>%
   rename(hnr35 = value)%>%
   select(-variable)
@@ -264,7 +264,7 @@ slz_strF0 <-  slz %>%
          strF0_means010)
 
 slz_strF0_trans  <-  melt(slz_strF0, id = c("idnum"))
-slz_strF0_trans$time  <-  str_sub(slz_strF0_trans$variable,-2,-1)
+slz_strF0_trans$measurement.no  <-  str_sub(slz_strF0_trans$variable,-2,-1)
 slz_strF0_trans <-  slz_strF0_trans %>%
   rename(strF0 = value)%>%
   select(-variable)
@@ -277,7 +277,7 @@ slz_sF1 <-  slz %>%
          sF1_means010)
 
 slz_sF1_trans  <-  melt(slz_sF1, id = c("idnum"))
-slz_sF1_trans$time  <-  str_sub(slz_sF1_trans$variable,-2,-1)
+slz_sF1_trans$measurement.no  <-  str_sub(slz_sF1_trans$variable,-2,-1)
 slz_sF1_trans <-  slz_sF1_trans %>%
   rename(sF1 = value)%>%
   select(-variable)
@@ -290,7 +290,7 @@ slz_sF2 <-  slz %>%
          sF2_means010)
 
 slz_sF2_trans  <-  melt(slz_sF2, id = c("idnum"))
-slz_sF2_trans$time  <-  str_sub(slz_sF2_trans$variable,-2,-1)
+slz_sF2_trans$measurement.no  <-  str_sub(slz_sF2_trans$variable,-2,-1)
 slz_sF2_trans <-  slz_sF2_trans %>%
   rename(sF2 = value)%>%
   select(-variable)
@@ -303,7 +303,7 @@ slz_sB1 <-  slz %>%
          sB1_means010)
 
 slz_sB1_trans  <-  melt(slz_sB1, id = c("idnum"))
-slz_sB1_trans$time  <-  str_sub(slz_sB1_trans$variable,-2,-1)
+slz_sB1_trans$measurement.no  <-  str_sub(slz_sB1_trans$variable,-2,-1)
 slz_sB1_trans <-  slz_sB1_trans %>%
   rename(sB1 = value)%>%
   select(-variable)
@@ -316,7 +316,7 @@ slz_sB2 <-  slz %>%
          sB2_means010)
 
 slz_sB2_trans  <-  melt(slz_sB2, id = c("idnum"))
-slz_sB2_trans$time  <-  str_sub(slz_sB2_trans$variable,-2,-1)
+slz_sB2_trans$measurement.no  <-  str_sub(slz_sB2_trans$variable,-2,-1)
 slz_sB2_trans <-  slz_sB2_trans %>%
   rename(sB2 = value)%>%
   select(-variable)
@@ -329,7 +329,7 @@ slz_soe <-  slz %>%
          soe_means010)
 
 slz_soe_trans  <-  melt(slz_soe, id = c("idnum"))
-slz_soe_trans$time  <-  str_sub(slz_soe_trans$variable,-2,-1)
+slz_soe_trans$measurement.no  <-  str_sub(slz_soe_trans$variable,-2,-1)
 slz_soe_trans <-  slz_soe_trans %>%
   rename(soe = value)%>%
   select(-variable)
@@ -354,7 +354,7 @@ slz_trans <-  list(slz_h1h2c_trans,
                   slz_sB1_trans,
                   slz_sB2_trans,
                   slz_energy_trans,
-                  slz_soe_trans) %>% reduce(merge, by = c("idnum","time"))
+                  slz_soe_trans) %>% reduce(merge, by = c("idnum","measurement.no"))
 
 # Saving the file 
 write.csv(slz_trans, file = "data/interim/slz_transformed.csv", row.names = F, fileEncoding = "UTF-8")

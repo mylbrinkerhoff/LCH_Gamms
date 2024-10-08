@@ -1,0 +1,908 @@
+---
+title: "Laryngeal Complexity testing"
+author: "Mykel Loren Brinkerhoff"
+date: "22. July 2024"
+bibliography: Dissertation.bib
+format: 
+  html:
+    code-fold: true
+---
+
+```{r}
+#| label: load-packages
+#| include: false
+
+library(mgcv)
+library(itsadug)
+library(tidyverse)
+library(viridis)
+library(reshape2)
+library(readr)
+library(lme4)
+library(knitr)
+```
+
+
+```{r}
+#| label: data-for-visualizations
+#| include: false
+
+# Loading Data
+slz.clean <- read.csv("data/processed/slz_cleaned.csv", header = TRUE)
+
+### convert certain columns into factors.
+slz.clean$Phonation <- factor(slz.clean$Phonation, levels = c("modal", 
+                                                  "breathy", 
+                                                  "checked", 
+                                                  "laryngealized"))
+slz.clean$Speaker <- slz.clean$Speaker %>% factor()
+slz.clean$Word <- slz.clean$Word %>% factor()
+slz.clean$Vowel <- slz.clean$Vowel %>% factor()
+slz.clean$Tone <- slz.clean$Tone %>% factor()
+
+# adding start.event
+slz.clean$start.event = (slz.clean$measurement.no == 1)
+
+
+# creating a colorblind friendly palate for gams
+
+colorblind <- palette.colors(palette = "Okabe-Ito")
+```
+## Introduction
+
+This document showcases the data and code ran to test the claims of @silvermanLaryngealComplexityOtomanguean1997, @blankenshipTimeCourseBreathiness1997, and @blankenshipTimingNonmodalPhonation2002 that modal and nonmodal phonation are phased so tone can be recovered. These claims about laryngeal complexity will be tested using GAMMs [@hastieGeneralizedAdditiveModels1986] in Santiago Laxopa Zapotec.
+
+## Silverman 1997
+
+The central claim of @silvermanLaryngealComplexityOtomanguean1997 is that in languages with tone and voice quality distinctions,  modal and non-modal phonation are phased with respect to one another. This then allows for tone to be realized on the portion of the vowel with modal phonation and can reliably be recovered. 
+
+In the almost 30 years since this claim was made very little research has gone into validating these claims. Only two papers have touched on these claims in recent years @garellekAcousticConsequencesPhonation2011 and @dicanioCoarticulationToneGlottal2012.
+
+In both of these studies they found that there was an effect on the non-modal phonation on tone. This was primarily done by seeing if f0 was perturbed in a portion of the vowel. This method does work however it just shows that f0 is influenced by the non-modal phonation and not necessarily if these phonations are phased. 
+
+## Harmonics-to-Noise and Cepstral Peak Prominance
+
+A potentially more revealing way to get at this question of phasing is to use some subset of harmonics-to-noise ratios (HNR) or cepstral peak prominence (CPP) to see if there is phasing. The reason that these measures would be informative is because they are both measures of periodicity. It is well known that modal phonation is predominately periodic in nature whereas non-modal phonation is aperiodic (see @garellekPhoneticsVoice2019 for an overview). When viewing these measures, phonations with high periodicity (i.e., modals) with have the highest value and those with aperiodicity will have lower values.
+
+Now the primary difference in HNR and CPP is in how they are calculated and over what portion of the acoustic signal. HNRs are a type of measure where the ratio of harmonic and noise components provides an indication of the general frequency of the speech signal by quantifying the relationship between the periodic component (harmonic part) and the aperiodic component (noise), expressed in dB. IN the different types of HNR this ratio is calculated across only a subset of the signal. In the case of HNR 500 this is done from 0 to 500 Hz, for HNR 1500 this is done from 0 to 1500 Hz, and so forth. 
+
+### HNR and CPP figures
+
+::: panel-tabset
+#### HNR 500
+```{r}
+#| label: fig-hnr5
+#| fig-cap: "Loess smooth for HNR < 500 Hz across the duration of the vowel"
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr05, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 2) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 500Hz (dB)") +
+  theme_bw()
+```
+
+#### HNR 1500
+```{r}
+#| label: fig-hnr15
+#| fig-cap: "Loess smooth for HNR < 1500 Hz across the duration of the vowel"
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr15, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 2) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 1500Hz (dB)") +
+  theme_bw()
+```
+
+#### HNR 2500
+```{r}
+#| label: fig-hnr25
+#| fig-cap: "Loess smooth for HNR < 2500 Hz across the duration of the vowel"
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr25, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 2) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 2500Hz (dB)") +
+  theme_bw()
+```
+
+#### HNR 3500
+```{r}
+#| label: fig-hnr35
+#| fig-cap: "Loess smooth for HNR < 3500 Hz across the duration of the vowel"
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr35, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 2) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 3500Hz (dB)") +
+  theme_bw()
+```
+
+#### CPP
+```{r}
+#| label: fig-cpp
+#| fig-cap: "Loess smooth for CPP across the duration of the vowel."
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = cpp, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 2) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "CPP (dB)") +
+  theme_bw()
+```
+
+#### HNR 500 by Speaker
+```{r}
+#| label: fig-hnr500Speaker
+#| fig-cap: "Loess smooth for HNR < 500 Hz across the duration of the vowel separated by Speaker."
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr05z, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 1) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 500Hz (normalized)") +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  theme_bw()
+```
+
+#### HNR 1500 by Speaker
+```{r}
+#| label: fig-hnr1500Speaker
+#| fig-cap: "Loess smooth for HNR < 1500 Hz across the duration of the vowel separated by Speaker."
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr15z, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 1) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 1500Hz (normalized)") +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  theme_bw()
+```
+
+#### HNR 2500 by Speaker
+```{r}
+#| label: fig-hnr2500Speaker
+#| fig-cap: "Loess smooth for HNR < 2500 Hz across the duration of the vowel separated by Speaker."
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr25z, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 1) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 2500Hz (normalized)") +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  theme_bw()
+```
+
+#### HNR 3500 by Speaker
+```{r}
+#| label: fig-hnr3500Speaker
+#| fig-cap: "Loess smooth for HNR < 3500 Hz across the duration of the vowel separated by Speaker."
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = hnr35z, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 1) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "HNR 3500Hz (normalized)") +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  theme_bw()
+```
+
+#### CPP by speaker
+```{r}
+#| label: fig-cppSpeaker
+#| fig-cap: "Loess smooth for CPP across the duration of the vowel separated by Speaker."
+#| warning: false
+
+slz.clean %>% 
+  ggplot(aes(x = measurement.no*10, 
+             y = cppz, 
+             group=Phonation, 
+             colour=Phonation)) +
+  geom_smooth(method = "loess", linewidth = 1) +
+  scale_color_viridis(discrete=TRUE) +
+  labs(x = "Normalized time (% of vowel duration)",
+       y = "CPP (normalized)") +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  theme_bw()
+```
+:::
+ 
+## Generalized Additive Mixed Models
+
+### HNR 500
+
+Starting off with the linear model as the baseline.
+```{r}
+#| label: hnr500-linear
+
+hnr5.m1 <- bam(hnr05 ~ Phonation, data = slz.clean, method = "ML")
+(smryhnr5.m1 <- summary(hnr5.m1))
+
+```
+
+Now adding a smooth over time. 
+```{r}
+#| label: hnr5-m2
+#| warning: false
+
+
+hnr5.m2 <- bam(hnr05 ~ Phonation +
+                 s(measurement.no), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m2 <- summary(hnr5.m2))
+
+```
+Model criticism of m2. Results show that there are still issues with the residuals. This might mean that the model doesn't account for everything and there is still important interactions that need to be accounted for.
+```{r}
+#| label: hnr5.m2-checking
+
+par(mfrow=c(2,2))
+gam.check(hnr5.m2)
+
+```
+
+
+```{r}
+#| label: fig-hnr5.m2-plots
+#| fig-cap: "Smooth and difference plots for hnr5.m2."
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(hnr5.m2, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(hnr5.m2, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(hnr5.m2, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(hnr5.m2, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+```
+
+Model comparisons between m1 and m2. Model comparison shows that m2 is a better model of the data.
+```{r}
+
+compareML(hnr5.m1, hnr5.m2)
+```
+What if we split the `measurement.no` by `Phonation`?
+
+```{r}
+#| label: hnr5.m2b
+
+hnr5.m2b <- bam(hnr05 ~ Phonation +
+                 s(measurement.no, by = Phonation), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m2b <- summary(hnr5.m2b))
+
+## model criticism
+
+gam.check(hnr5.m2b)
+```
+ Plots for the new model.
+```{r}
+#| label: fig-hnr5.m2b-plots
+#| fig-cap: "Smooth and difference plots for hnr5.m2b."
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(hnr5.m2b, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(hnr5.m2b, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(hnr5.m2b, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(hnr5.m2b, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+```
+Model comparison between m2 and m2b. Results show that adding a by-factor to measurement number was not informative and the model without is more informative. 
+```{r}
+compareML(hnr5.m2,hnr5.m2b)
+```
+
+<!-- According to @soskuthyEvaluatingGeneralisedAdditive2021, using an ordered factor difference avoids **overly conservative *𝑝*-values** that results from not using them. This can be handled by making Phonation an ordered factor -->
+
+<!-- ```{r} -->
+<!-- #| label: hnr5-phonord -->
+
+<!-- slz.clean$phon.ord <- as.ordered(slz.clean$Phonation) -->
+<!-- contrasts(slz.clean$phon.ord) <- "contr.treatment" -->
+
+<!-- hnr5.m2c <- bam(hnr05 ~ phon.ord + -->
+<!--                      s(measurement.no) + -->
+<!--                      s(measurement.no, by = phon.ord), -->
+<!--                    data = slz.clean, method = "ML") -->
+<!-- (smryhnr5.m2c <- summary(hnr5.m2c)) -->
+<!-- ``` -->
+
+<!-- Model criticism -->
+<!-- ```{r} -->
+<!-- gam.check(hnr5.m2c) -->
+<!-- ``` -->
+
+<!-- Model comparisons -->
+<!-- ```{r} -->
+<!-- compareML(hnr5.m2,hnr5.m2b, hnr5.m2c) -->
+<!-- ``` -->
+
+Random intercepts for speaker?
+```{r}
+#| label: hnr5-randomintercept
+hnr5.m3 <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker, bs="re"), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m3 <- summary(hnr5.m3))
+  
+gam.check(hnr5.m3)
+```
+Plots
+```{r}
+#| label: fig-hnr5.m3-plots
+#| fig-cap: "Smooth and difference plots for hnr5.m3."
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(hnr5.m3, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(hnr5.m3, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(hnr5.m3, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(hnr5.m3, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+```
+Model comparisons
+```{r}
+compareML(hnr5.m2,hnr5.m3)
+```
+
+Adding random slopes for speaker by phonation
+```{r}
+#| label: hnr5-randomslope
+hnr5.m4 <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker, bs="re") + 
+                 s(Speaker,Phonation, bs="re"), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m4 <- summary(hnr5.m4))
+  
+gam.check(hnr5.m4)
+```
+Plotting m4
+```{r}
+#| label: fig-hnr5.m4-plots
+#| fig-cap: "Smooth and difference plots for hnr5.m3."
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(hnr5.m4, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(hnr5.m4, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(hnr5.m4, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(hnr5.m4, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+```
+Model comparison to seeif random slope is needed
+```{r}
+compareML(hnr5.m3,hnr5.m4)
+```
+
+Adding in a factor smooth for `measurement.no` by `Speaker`
+```{r}
+#| label: hnr5.m5
+
+hnr5.m5 <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m5 <- summary(hnr5.m5))
+  
+# gam.check(hnr5.m5)
+```
+Adding speaker by itself as random intercept
+```{r}
+#| label: hnr5.m5b
+
+hnr5.m5b <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker, bs="re") + 
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m5b <- summary(hnr5.m5b))
+  
+# gam.check(hnr5.m5b)
+```
+
+PLotting m5
+```{r}
+#| label: fig-hnr5.m5-plots
+#| fig-cap: "Smooth and difference plots for hnr5.m5."
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(hnr5.m5, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(hnr5.m5, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(hnr5.m5, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(hnr5.m5, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+```
+
+Model comparison to see if we need the factor smooth or measurment.no by speaker. Yes we need to include factor smooth
+```{r}
+compareML(hnr5.m4,hnr5.m5)
+```
+
+Modifying the factor smooth to remove a random intercept and random slope
+```{r}
+#| label: hnr5.m6
+
+hnr5.m6 <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(measurement.no,Speaker,by=Phonation,bs="fs",m=1), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m6 <- summary(hnr5.m6))
+```
+#### Model comparison shows that using a factor smooth is not informative. 
+```{r}
+compareML(hnr5.m5,hnr5.m6)
+```
+#### Is adding speaker back in as a random intercept helpful. No it is not helpful. 
+```{r}
+compareML(hnr5.m5, hnr5.m5b)
+```
+
+#### Adding in a random intercept for word
+```{r}
+hnr5.m7 <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1) +
+                 s(Word, bs="re"), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m7 <- summary(hnr5.m7))
+
+```
+```{r}
+compareML(hnr5.m5, hnr5.m7)
+```
+
+```{r}
+hnr5.m7b <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1) +
+                 s(Word,Phonation, bs="re"), 
+                 data = slz.clean, 
+                 method = "ML")
+(smryhnr5.m7b <- summary(hnr5.m7b))
+
+```
+
+```{r}
+compareML(hnr5.m7,hnr5.m7b)
+```
+
+#### Autocorrelation
+```{r}
+# Getting the acf
+hnr5.m7b.acf <- acf_resid(hnr5.m7b)
+
+#Autocorrelation at lag 1
+(rhoval <- hnr5.m7b.acf[2])
+
+# New model taking into account autocorrelation
+hnr5.m8 <- bam(hnr05 ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1) +
+                 s(Word,Phonation, bs="re"), 
+                 data = slz.clean, 
+                 rho = rhoval, 
+                 AR.start = slz.clean$start.event,
+                 method = "ML")
+(smryhnr5.m8 <- summary(hnr5.m8))
+
+# did we lower the residual at lag 1
+acf_resid(hnr5.m8)
+
+# Plots
+par(mfrow=c(2,2))
+plot_smooth(hnr5.m8, view="measurement.no", plot_all="Phonation", main="hnr5.m8", rug=FALSE, 
+            col=colorblind) 
+
+plot_diff(hnr5.m8, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(hnr5.m8, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(hnr5.m8, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+
+```
+
+Do I need to account for the different times a speaker would say one of the words.
+```{r}
+hnr5.m9 <- bam(hnr05 ~ Phonation +
+                 te(measurement.no, Iter, by=Phonation) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1) +
+                 s(Word,Phonation, bs="re"), 
+                 data = slz.clean, 
+                 rho = rhoval, 
+                 AR.start = slz.clean$start.event,
+                 method = "ML")
+(smryhnr5.m9 <- summary(hnr5.m9))
+
+```
+```{r}
+hnr5.m9.dc <- bam(hnr05 ~ Phonation +
+                 s(measurement.no, by=Phonation) +
+                 s(Iter, by=Phonation, k=3) +
+                 ti(measurement.no, Iter, by=Phonation) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1) +
+                 s(Word,Phonation, bs="re"), 
+                 data = slz.clean, 
+                 rho = rhoval, 
+                 AR.start = slz.clean$start.event,
+                 method = "ML")
+(smryhnr5.m9.dc <- summary(hnr5.m9.dc))
+```
+```{r}
+# Plots
+par(mfrow=c(2,2))
+plot_smooth(hnr5.m9, view="measurement.no", plot_all="Phonation", main="hnr5.m8", rug=FALSE, 
+            col=colorblind) 
+
+plot_diff(hnr5.m9, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(hnr5.m9, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(hnr5.m9, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+```
+
+```{r}
+#| label: m9-check
+
+gam.check(hnr5.m9)
+```
+Adding tone into the equation as a random vairable
+```{r}
+#| label: hnr5.m10
+ 
+hnr5.m10 <- bam(hnr05 ~ Phonation +
+                 te(measurement.no, Iter, by=Phonation) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1) +
+                 s(Word,Phonation, bs="re") +
+                 s(Tone,Phonation, bs="re"), 
+                 data = slz.clean, 
+                 rho = rhoval, 
+                 AR.start = slz.clean$start.event,
+                 method = "ML")
+(smryhnr5.m10 <- summary(hnr5.m10))
+
+```
+```{r}
+gam.check(hnr5.m10)
+```
+
+```{r}
+compareML(hnr5.m9,hnr5.m10)
+```
+### HNR 1500
+```{r}
+#| label: hnr1500-linear
+```
+
+
+### CPP
+
+#### CPP linear model
+```{r}
+#| label: cpp-linear
+
+cpp.m1 <- bam(cpp ~ Phonation, data = slz.clean, method = "ML")
+(smrycpp.m1 <- summary(cpp.m1))
+```
+#### Smooths over time
+```{r}
+#| label: cpp-m2
+#| warning: false
+
+
+cpp.m2 <- bam(cpp ~ Phonation +
+                 s(measurement.no), 
+                 data = slz.clean, 
+                 method = "ML")
+(smrycpp.m2 <- summary(cpp.m2))
+
+```
+
+#### Plots for cpp.m2
+
+```{r}
+#| label: fig-cpp.m2-plots
+#| fig-cap: "Smooth and difference plots for cpp.m2"
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(cpp.m2, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(cpp.m2, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(cpp.m2, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(cpp.m2, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+
+```
+#### Model comparison between cpp.m1 and cpp.m2
+```{r}
+#| label: modal_comparison-cpp.m1/m2
+#| warning: false
+
+compareML(cpp.m1,cpp.m2)
+
+```
+
+#### modal criticism for cpp.m2
+```{r}
+par(mfrow=c(2,2))
+gam.check(cpp.m2)
+```
+
+#### Smooths over time
+```{r}
+#| label: cpp-m2b
+#| warning: false
+
+
+cpp.m2b <- bam(cpp ~ Phonation +
+                 s(measurement.no, by=Phonation), 
+                 data = slz.clean, 
+                 method = "ML")
+(smrycpp.m2b <- summary(cpp.m2b))
+
+```
+
+#### Plots for cpp.m2
+
+```{r}
+#| label: fig-cpp.m2b-plots
+#| fig-cap: "Smooth and difference plots for cpp.m2b"
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(cpp.m2b, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(cpp.m2b, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(cpp.m2b, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(cpp.m2b, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+
+```
+
+#### model criticism for model cpp.m2b
+```{r}
+#| label: gamcheck-cpp.m2b
+
+par(mfrow=c(2,2))
+gam.check(cpp.m2b)
+```
+
+#### Model comparison between cpp.m2 and cpp.m2b
+```{r}
+#| label: cpp.m2/m2b-comparison
+
+compareML(cpp.m2,cpp.m2b)
+```
+#### adding random intercept for speaker
+```{r}
+#| label: cpp.m3
+
+cpp.m3 <- bam(cpp ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker, bs="re", k=10), 
+                 data = slz.clean, 
+                 method = "ML")
+(smrycpp.m3  <- summary(cpp.m3))
+
+cpp.m3b <- bam(cpp ~ Phonation +
+                 s(measurement.no, by=Phonation) +
+                 s(Speaker, bs="re", k=10), 
+                 data = slz.clean, 
+                 method = "ML")
+(smrycpp.m3b  <- summary(cpp.m3b))
+
+compareML(cpp.m3,cpp.m3b)
+```
+#### plots for cpp.m3
+```{r}
+#| label: fig-cpp.m3-plots
+#| fig-cap: "Smooth and difference plots for cpp.m3"
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(cpp.m3, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(cpp.m3, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(cpp.m3, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(cpp.m3, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+
+```
+
+#### model criticism for cpp.m3
+```{r}
+
+par(mfrow=c(2,2))
+gam.check(cpp.m3)
+```
+
+#### Comparing cpp.m2 with cpp.m3
+```{r}
+compareML(cpp.m2, cpp.m3)
+
+```
+
+#### CPP.m4 adding in the interaction between speaker and phonation
+```{r}
+
+cpp.m4 <- bam(cpp ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker, bs="re") + 
+                 s(Speaker,Phonation, bs="re"), 
+                 data = slz.clean, 
+                 method = "ML")
+(smrycpp.m4 <- summary(cpp.m4))
+```
+
+#### Plotting cpp.m4
+```{r}
+#| label: fig-cpp.m4-plots
+#| fig-cap: "Smooth and difference plots for cpp.m4"
+#| warning: false
+
+par(mfrow=c(2,2))
+
+plot_smooth(cpp.m4, view="measurement.no",
+            plot_all="Phonation", rug=F, col = colorblind)
+
+plot_diff(cpp.m4, view="measurement.no", 
+          comp=list(Phonation=c("checked","modal")))
+
+plot_diff(cpp.m4, view="measurement.no", 
+          comp=list(Phonation=c("breathy","modal")))
+
+plot_diff(cpp.m4, view="measurement.no", 
+          comp=list(Phonation=c("laryngealized","modal")))
+```
+
+#### Comparing cpp.m3 with cpp.m4
+```{r}
+compareML(cpp.m3, cpp.m4)
+
+```
+
+#### cpp.m5
+```{r}
+cpp.m5 <- bam(cpp ~ Phonation +
+                 s(measurement.no) +
+                 s(Speaker,Phonation, bs="re") +
+                 s(measurement.no,Speaker,bs="fs",m=1), 
+                 data = slz.clean, 
+                 method = "ML")
+(smrycpp.m5 <- summary(cpp.m5))
+```
+
+## Discussion
+
+
+## Conclusions
+
+In Conclusion
+
+## References

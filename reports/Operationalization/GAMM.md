@@ -32,6 +32,27 @@
 - There are a couple of ways that this can be organized or analyzed. 
     1. I can look at the interaction between f0 and the phonation categories
     2. I can look at the interaction between HNR/CPP and the phonation categories
+       - CPP/HNR is a measurement about periodicity.
+         - Modal vowels show the greatest amount of periodicity
+         - Non-modal vowels show the least amount of periodicty.
+       - This would allow me to analyze the Silverman's claim most directly
+         - He claims that you see an ordering of modal and non-modal phonation during the production of the vowel. 
+       - This is the route that I will be taking. 
+       - Observations during data exploration
+         - CPP shows breathy vowels being the most periodic, followed closely by modal vowels. 
+         - HNR 500Hz shows the expected behavior of all phonation types
+           - Breathy is still relatively high but is still lower than modal
+         - HNR 1500Hz shows the most potential. 
+           - Everything looks right. 
+           - Breathy is separated out more fully. 
+       - Ran linear regression models over the data from the Residual H1* study and HNR 1500Hz performed the best of the CPP/HNR measures. 
     3. I can look at the interaction between SoE and the phonation categories. 
 
 ## Tests
+- Model needs to capture:
+  1. Fit separate smooths to the phonations
+  2. Want to use model comparison and difference smooths to see if they are different
+  3. Include certain interaction
+    - 
+  4. Random smooths needed
+     - between Speakers, Word, and Repition of the word

@@ -63,10 +63,10 @@ slz.s <- slz_fil %>% group_by(Speaker) %>%
 ### Adding variable to sort the data into initial, middle, and end of the
 ### vowels
 slz.s <- slz.s %>% 
-  mutate(Position = case_when(time <= 2 ~ 1,
-                              time <= 4 ~ 2,
-                              time <= 6 ~ 3,
-                              time <= 8 ~ 4,
+  mutate(Position = case_when(measurement.no <= 2 ~ 1,
+                              measurement.no <= 4 ~ 2,
+                              measurement.no <= 6 ~ 3,
+                              measurement.no <= 8 ~ 4,
                               TRUE ~ 5))
 slz.s$Position <- slz.s$Position %>% factor()
 

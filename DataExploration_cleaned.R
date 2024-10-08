@@ -7,7 +7,6 @@
 ####################################################################
 
 # Libraries that are required
-library(ggplot2)
 library(mgcv)
 library(itsadug)
 library(tidyverse)
@@ -27,9 +26,7 @@ slz.clean$Phonation <- factor(slz.clean$Phonation, levels = c("modal",
 slz.clean$Speaker <- slz.clean$Speaker %>% factor()
 slz.clean$Word <- slz.clean$Word %>% factor()
 slz.clean$Vowel <- slz.clean$Vowel %>% factor()
-slz.clean$Iter <- slz.clean$Iter %>% factor()
 slz.clean$Tone <- slz.clean$Tone %>% factor()
-slz.clean$Position <- slz.clean$Position %>% factor()
 
 # Generating boxplots 
 h1h2_clean <- slz.clean %>% ggplot(aes(x = Position,
@@ -142,7 +139,7 @@ h1h2_clean.sp <- slz.clean %>% ggplot(aes(x = Position,
        x = "Vowel Position",
        y = "H1*-H2* (normalized)") +
   geom_boxplot(aes(colour = Phonation), notch = F) +
-  facet_wrap(.~Speaker) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
   theme_bw()
 h1h2_clean.sp
 
@@ -153,7 +150,7 @@ h1a3_clean.sp <- slz.clean %>% ggplot(aes(x = Position,
        x = "Vowel Position",
        y = "H1*-A3 (normalized)") +
   geom_boxplot(aes(colour = Phonation), notch = F) +
-  facet_wrap(.~Speaker) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
   theme_bw()
 h1a3_clean.sp
 
@@ -164,7 +161,7 @@ soe_clean.sp <- slz.clean %>% ggplot(aes(x = Position,
        x = "Vowel Position",
        y = "SoE (normalized)") +
   geom_boxplot(aes(colour = Phonation), notch = F) +
-  facet_wrap(.~Speaker) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
   theme_bw()
 soe_clean.sp
 
@@ -175,7 +172,7 @@ cpp_clean.sp <- slz.clean %>% ggplot(aes(x = Position,
        x = "Vowel Position",
        y = "CPP (normalized)") +
   geom_boxplot(aes(colour = Phonation), notch = F) +
-  facet_wrap(.~Speaker) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
   theme_bw()
 cpp_clean.sp
 
@@ -186,7 +183,7 @@ h1_clean.sp <- slz.clean %>% ggplot(aes(x = Position,
        x = "Vowel Position",
        y = "resid. H1 (normalized)") +
   geom_boxplot(aes(colour = Phonation), notch = F) +
-  facet_wrap(.~Speaker) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
   theme_bw()
 h1_clean.sp
 
@@ -197,7 +194,7 @@ f0_clean.sp <- slz.clean %>% ggplot(aes(x = Position,
        x = "Vowel Position",
        y = "f0 (normalized)") +
   geom_boxplot(aes(colour = Phonation), notch = F) +
-  facet_wrap(.~Speaker) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
   theme_bw()
 f0_clean.sp
 
@@ -288,7 +285,7 @@ hnr35.clean.line <- slz.clean %>%
              colour=Phonation)) +
   geom_smooth(method = "loess", linewidth = 2) +
   scale_color_viridis(discrete=TRUE) +
-  labs(title = "clean HNR 500Hz measure across the vowel", 
+  labs(title = "clean HNR 3500Hz measure across the vowel", 
        x = "Normalized time (% of vowel duration)",
        y = "HNR 3500Hz (normalized)") +
   theme_bw()
@@ -367,7 +364,7 @@ cpp.clean.line.sp <- slz.clean %>%
              y = cppz, 
              group=Phonation, 
              colour=Phonation)) +
-  geom_smooth(method = "loess", linewidth = 2) +
+  geom_smooth(method = "loess", linewidth = 1) +
   scale_color_viridis(discrete=TRUE) +
   labs(title = "clean CPP measure across the vowel by Speaker", 
        x = "Normalized time (% of vowel duration)",
