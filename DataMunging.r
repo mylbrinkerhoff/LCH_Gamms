@@ -5,7 +5,7 @@
 ###   M. Brinkerhoff  * UCSC  * 2024-05-14 (T)
 ###   
 ####################################################################
-melt
+
 # Libraries that are required
 library(ggplot2)
 library(mgcv)
@@ -334,6 +334,32 @@ slz_soe_trans <-  slz_soe_trans %>%
   rename(soe = value)%>%
   select(-variable)
 
+# a1c
+slz_a1c <-  slz %>%
+  select(idnum, A1c_means001, A1c_means002, A1c_means003,
+         A1c_means004, A1c_means005, A1c_means006,
+         A1c_means007, A1c_means008, A1c_means009,
+         A1c_means010)
+
+slz_a1c_trans <-  melt(slz_a1c, id = c("idnum"))
+slz_a1c_trans$measurement.no <- str_sub(slz_a1c_trans$variable,-2,-1)
+slz_a1c_trans <-  slz_a1c_trans %>%
+  rename(a1c = value) %>%
+  select(-variable)
+
+# a2c
+slz_a2c <-  slz %>%
+  select(idnum, A2c_means001, A2c_means002, A2c_means003,
+         A2c_means004, A2c_means005, A2c_means006,
+         A2c_means007, A2c_means008, A2c_means009,
+         A2c_means010)
+
+slz_a2c_trans  <-  melt(slz_a2c, id = c("idnum"))
+slz_a2c_trans$measurement.no  <-  str_sub(slz_a2c_trans$variable,-2,-1)
+slz_a2c_trans <-  slz_a2c_trans %>%
+  rename(a2c = value) %>%
+  select(-variable)
+
 ### merging
 slz_trans <-  list(slz_h1h2c_trans,
                   slz_h1c_trans,
@@ -354,7 +380,9 @@ slz_trans <-  list(slz_h1h2c_trans,
                   slz_sB1_trans,
                   slz_sB2_trans,
                   slz_energy_trans,
-                  slz_soe_trans) %>% reduce(merge, by = c("idnum","measurement.no"))
+                  slz_soe_trans,
+                  slz_a1c_trans,
+                  slz_a2c_trans) %>% reduce(merge, by = c("idnum","measurement.no"))
 
 # Saving the file 
 write.csv(slz_trans, file = "data/interim/slz_transformed.csv", row.names = F, fileEncoding = "UTF-8")

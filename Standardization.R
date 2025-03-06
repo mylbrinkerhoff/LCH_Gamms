@@ -43,7 +43,9 @@ slz.s <- slz_fil %>% group_by(Speaker) %>%
          f1z = (sF1 - mean(sF1, na.rm = T))/sd(sF1, na.rm = T),
          f2z = (sF2 - mean(sF2, na.rm = T))/sd(sF2, na.rm = T),
          b1z = (sB1 - mean(sB1, na.rm = T))/sd(sB1, na.rm = T),
-         b2z = (sB2 - mean(sB2, na.rm = T))/sd(sB2, na.rm = T)
+         b2z = (sB2 - mean(sB2, na.rm = T))/sd(sB2, na.rm = T),
+         a1z = (a1c - mean(a1c, na.rm = T))/sd(a1c, na.rm = T),
+         a2z = (a2c - mean(a2c, na.rm = T))/sd(a2c, na.rm = T),
   ) %>%
   mutate(log.soe = log10(soe+0.001),
          m.log.soe = mean(log.soe, na.rm=T),

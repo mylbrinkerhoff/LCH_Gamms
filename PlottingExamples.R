@@ -123,16 +123,20 @@ df.plot <- slz.clean%>%
             H1c.resid.se   = std.error(H1c.resid),
             H1c.resid.pse = H1c.resid.mean + 1.96 * H1c.resid.se,
             H1c.resid.mse = H1c.resid.mean - 1.96 * H1c.resid.se,
-          #   a1c.mean = mean(a1c),
-          #   a1c.se   = std.error(a1c),
-          #   a1c.pse = a1c.mean + 1.96 * a1c.se,
-          #      a1c.mse = a1c.mean - 1.96 * a1c.se,
-          #      a2c.mean = mean(a2c),
-          #      a2c.se   = std.error(a2c),
-          #      a2c.pse = a2c.mean + 1.96 * a2c.se,
-          #      a2c.mse = a2c.mean - 1.96 * a2c.se,
+            a1c.mean = mean(a1c),
+            a1c.se   = std.error(a1c),
+            a1c.pse = a1c.mean + 1.96 * a1c.se,
+          a1c.mse = a1c.mean - 1.96 * a1c.se,
+          a2c.mean = mean(a2c),
+          a2c.se   = std.error(a2c),
+          a2c.pse = a2c.mean + 1.96 * a2c.se,
+          a2c.mse = a2c.mean - 1.96 * a2c.se,
           ) %>%
-  ungroup()
+  ungroup() %>%
+  mutate(Phonation = recode(Phonation, "laryngealized" = "rearticulated"))
+
+write.csv(df.plot, file = "data/processed/plotting.csv", row.names = F, fileEncoding = "UTF-8")
+
 
 # This first approach gathers mean, mean minus 1.96 Std. Error, and mean plus
 # 1.96 Std. Error into the same columns, with "stat" marking which stat it is,
@@ -173,6 +177,22 @@ h1h2.line <- ggplot(df.plot,
   theme_bw()
 h1h2.line
 
+h1h2.line.sp <- ggplot(df.plot,
+            aes(x = measurement.no, y = h1h2.mean)) + 
+  geom_point(aes(shape = Phonation), size = 3) +
+  scale_shape_manual(values = c(0, 1, 2, 5)) +
+  # geom_smooth(aes(group = Phonation, colour = Phonation), stat = "identity") +
+  geom_errorbar(aes(ymin = h1h2.mse, ymax = h1h2.pse, colour = Phonation), width = 0.2)+
+  geom_line(aes(colour = Phonation), linewidth = 1) +
+  scale_colour_manual(values = colorblind) +
+  scale_x_continuous(n.breaks = 10) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  labs(title = "H1*-H2* by speaker",
+       x = "Measurement Number",
+       y = "H1*-H2* (dB)") +
+  theme_bw()
+h1h2.line.sp
+
 h1c.line <- ggplot(df.plot,
                     aes(x = measurement.no, y = h1c.mean)) + 
   geom_point(aes(shape = Phonation), size = 7) +
@@ -187,6 +207,23 @@ h1c.line <- ggplot(df.plot,
        y = "H1* (dB)") +
   theme_bw()
 h1c.line
+
+h1c.line.sp <- ggplot(df.plot,
+                    aes(x = measurement.no, y = h1c.mean)) + 
+  geom_point(aes(shape = Phonation), size = 7) +
+  scale_shape_manual(values = c(0, 1, 2, 5)) +
+  # geom_smooth(aes(group = Phonation, colour = Phonation), stat = "identity") +
+  geom_errorbar(aes(ymin = h1c.mse, ymax = h1c.pse, colour = Phonation), width = 0.2)+
+  geom_line(aes(colour = Phonation), linewidth = 1.5) +
+  scale_colour_manual(values = colorblind) +
+  scale_x_continuous(n.breaks = 10) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  labs(title = "H1*",
+       x = "Measurement Number",
+       y = "H1* (dB)") +
+  theme_bw()
+h1c.line.sp
+
 
 h2h4.line <- ggplot(df.plot,
                     aes(x = measurement.no, y = h2h4.mean)) + 
@@ -310,7 +347,7 @@ hnr05.line
 
 hnr15.line <- ggplot(df.plot,
                     aes(x = measurement.no, y = hnr15.mean)) + 
-  geom_point(aes(shape = Phonation), size = 7) +
+  geom_point(aes(shape = Phonation), size = 3) +
   scale_shape_manual(values = c(0, 1, 2, 5)) +
   # geom_smooth(aes(group = Phonation, colour = Phonation), stat = "identity") +
   geom_errorbar(aes(ymin = hnr15.mse, ymax = hnr15.pse, colour = Phonation), width = 0.2)+
@@ -473,6 +510,54 @@ H1c.resid.line <- ggplot(df.plot,
   theme_bw()
 H1c.resid.line
 
+H1c.resid.line.sp <- ggplot(df.plot,
+                    aes(x = measurement.no, y = H1c.resid.mean)) + 
+  geom_point(aes(shape = Phonation), size = 3) +
+  scale_shape_manual(values = c(0, 1, 2, 5)) +
+  # geom_smooth(aes(group = Phonation, colour = Phonation), stat = "identity") +
+  geom_errorbar(aes(ymin = H1c.resid.mse, ymax = H1c.resid.pse, colour = Phonation), width = 0.2)+
+  geom_line(aes(colour = Phonation), linewidth = 1) +
+  scale_colour_manual(values = colorblind) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  scale_x_continuous(n.breaks = 10) +
+  labs(title = "Residual H1* by speaker",
+       x = "Measurement Number",
+       y = "Residual H1* (normalized)") +
+  theme_bw()
+H1c.resid.line.sp
+
+a1c.line <- ggplot(df.plot,
+                    aes(x = measurement.no, y = a1c.mean)) + 
+  geom_point(aes(shape = Phonation), size = 3) +
+  scale_shape_manual(values = c(0, 1, 2, 5)) +
+  # geom_smooth(aes(group = Phonation, colour = Phonation), stat = "identity") +
+  geom_errorbar(aes(ymin = a1c.mse, ymax = a1c.pse, colour = Phonation), width = 0.2)+
+  geom_line(aes(colour = Phonation), linewidth = 1) +
+  scale_colour_manual(values = colorblind) +
+  scale_x_continuous(n.breaks = 10) +
+  # facet_wrap(.~Vowel, ncol = 5) +
+  labs(title = "A1*",
+       x = "Measurement Number",
+       y = "A1* (dB)") +
+  theme_bw()
+a1c.line
+
+a1c.resid.line.sp <- ggplot(df.plot,
+                    aes(x = measurement.no, y = a1c.mean)) + 
+  geom_point(aes(shape = Phonation), size = 3) +
+  scale_shape_manual(values = c(0, 1, 2, 5)) +
+  # geom_smooth(aes(group = Phonation, colour = Phonation), stat = "identity") +
+  geom_errorbar(aes(ymin = a1c.mse, ymax = a1c.pse, colour = Phonation), width = 0.2)+
+  geom_line(aes(colour = Phonation), linewidth = 1) +
+  scale_colour_manual(values = colorblind) +
+  facet_wrap(.~Speaker, nrow = 2, ncol = 5) +
+  scale_x_continuous(n.breaks = 10) +
+  labs(title = "A1* by speaker",
+       x = "Measurement Number",
+       y = "A1* (db)") +
+  theme_bw()
+a1c.resid.line.sp
+
 
 # Saving the plots
 
@@ -492,7 +577,7 @@ ggsave(filename = "reports/figs/hnr5_clean_line.png",
 
 ggsave(filename = "reports/figs/hnr15_clean_line.png",
        plot = hnr15.clean.line,
-       width = 5,
+       width = 6,
        height = 3,
        dpi = 300,
        units = "in")
@@ -535,6 +620,13 @@ ggsave(filename = "reports/figs/h1_clean_line.eps",
 ggsave(filename = "reports/figs/h1a3_clean_line.png",
        plot = h1a3.clean.line,
        width = 5,
+       height = 3,
+       dpi = 300,
+       units = "in")
+
+ggsave(filename = "reports/figs/a1_clean_line.png",
+       plot = a1c.line,
+       width = 6,
        height = 3,
        dpi = 300,
        units = "in")
