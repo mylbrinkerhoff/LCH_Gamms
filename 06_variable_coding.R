@@ -50,3 +50,15 @@ table(slz_normalized$Speaker.f1)
 slz_normalized$Vowel.f1 <- slz_normalized$Vowel %>% factor()
 contrasts(slz_normalized$Vowel.f1) <- contr.poly(5)
 table(slz_normalized$Vowel.f1)
+
+# Orthogonal coding for Iteration
+slz_normalized$Iteration.f1 <- slz_normalized$Iter %>% factor()
+contrasts(slz_normalized$Iteration.f1) <- contr.poly(6)
+table(slz_normalized$Iteration.f1)
+
+# Saving the dataset with the new coding
+write.csv(slz_normalized, 
+          file = "data/processed/slz_coded.csv", 
+          row.names = F, 
+          fileEncoding = "UTF-8")
+
