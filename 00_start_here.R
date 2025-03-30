@@ -16,12 +16,13 @@
 packages <- c("lme4",
               "tidyverse", 
               "mgcv",
-              # "itsadug", 
+              "itsadug", 
               "reshape2", 
               "readr",
               "here",
-              "tidygam"  
-            ) 
+              "tidygam",
+              "cowplot"  
+) 
 
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())))  
@@ -30,12 +31,13 @@ if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
 # Loading the packages and functions 
 library(lme4) # required for residual H1*
 library(mgcv) # required for GAMM
-# library(itsadug) # required for GAMM
+library(itsadug) # required for GAMM
 library(tidyverse) # required for data manipulation
 library(reshape2) # required for data manipulation
 library(readr) # required for reading in data
 library(here) # required for setting the working directory
 library(tidygam) # required for GAMM
+library(cowplot) # required for plotting
 source("R/gamm_hacks.R") # series of functions that make GAMM easier to work with
 
 # Loading the data
@@ -45,3 +47,7 @@ slz <- read.csv(here("data/raw/", "Voice_Master_Split.csv"))
 # Create a variable for colorblind palette
 
 colorblind <- palette.colors(palette = "Okabe-Ito")
+
+## set the theme and color palette for ggplot2
+
+theme_set(theme_bw())

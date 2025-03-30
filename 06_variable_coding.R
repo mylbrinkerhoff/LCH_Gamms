@@ -19,7 +19,7 @@ slz_normalized$Tone.f1 <- slz_normalized$Tone %>% factor(levels = c("H", "M", "L
 
 # assigning the orthogonal polynomial contrasts to Tone
 contrasts(slz_normalized$Tone.f1) <- contr.poly(5)
-table(slz_normalized$Tone.f1)
+table(slz_normalized$Tone.f1, slz_normalized$Phonation)
 
 # Simple coding for Gender
 slz_normalized <- slz_normalized %>% 
@@ -55,6 +55,13 @@ table(slz_normalized$Vowel.f1)
 slz_normalized$Iteration.f1 <- slz_normalized$Iter %>% factor()
 contrasts(slz_normalized$Iteration.f1) <- contr.poly(6)
 table(slz_normalized$Iteration.f1)
+
+# relevel the phonation
+slz_normalized$Phonation <- slz_normalized$Phonation %>% factor(levels = c("modal", "breathy", "checked", "rearticulated"))
+
+# factorize word
+slz_normalized$Word <- slz_normalized$Word %>% factor()
+
 
 # Saving the dataset with the new coding
 write.csv(slz_normalized, 
