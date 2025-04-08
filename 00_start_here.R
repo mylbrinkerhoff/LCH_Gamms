@@ -21,6 +21,7 @@ packages <- c("lme4",
               "readr",
               "here",
               "tidygam",
+              # "tidymv",
               "cowplot"  
 ) 
 
@@ -49,5 +50,4 @@ slz <- read.csv(here("data/raw/", "Voice_Master_Split.csv"))
 colorblind <- palette.colors(palette = "Okabe-Ito")
 
 ## set the theme and color palette for ggplot2
-
 theme_set(theme_bw())

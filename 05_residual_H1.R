@@ -15,10 +15,9 @@
 
 ### Calculating Residual h1
 #### Generate the lmer model for residual h1
-model_position_h1c_covariant <- lmer(h1cz ~ energyz + 
-                                       (energyz||Speaker),
-                                     data = slz_normalized,
-                                     REML = FALSE)
+model_position_h1c_covariant <- lmer(h1cz ~ energyz + (energyz||Speaker),
+                                    data = slz_normalized,
+                                    REML = FALSE)
 
 #### extract the energy factor
 energy_factor <- fixef(model_position_h1c_covariant)[2]

@@ -41,21 +41,21 @@ slz_normalized <- slz_filtered %>%
     hnr35z = (hnr35 - mean(hnr35, na.rm = T)) / sd(hnr35, na.rm = T),
     cppz = (cpp - mean(cpp, na.rm = T)) / sd(cpp, na.rm = T),
     shrz = (shr - mean(shr, na.rm = T)) / sd(shr, na.rm = T),
-    durationz = (Duration - mean(Duration, na.rm = T)) / sd(Duration, na.rm = T)
+    durationz = (Duration - mean(Duration, na.rm = T)) / sd(Duration, na.rm = T),
+    soez = (soe - mean(soe, na.rm = T)) / sd(soe, na.rm = T),
   ) %>%
   mutate(
     log.soe = log10(soe + 0.001),
     m.log.soe = mean(log.soe, na.rm = T),
     sd.log.soe = sd(log.soe, na.rm = T),
-    z.log.soe = (log.soe - m.log.soe) / sd.log.soe,
+    log_soe_z = (log.soe - m.log.soe) / sd.log.soe,
     max.soe = max(log.soe),
     min.soe = min(log.soe),
   ) %>%
-  mutate(norm.soe = (log.soe - min.soe) / (max.soe - min.soe), ) %>%
+  mutate(norm_soe = (log.soe - min.soe) / (max.soe - min.soe), ) %>%
   select(-c(log.soe,
     m.log.soe,
     sd.log.soe,
-    z.log.soe,
     max.soe,
     min.soe
   )) %>%
