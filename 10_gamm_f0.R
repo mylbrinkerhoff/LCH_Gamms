@@ -19,11 +19,13 @@ slz_low <- slz_normalized %>%
 
 # Set start time 
 slz_low$start_event <- slz_low$measurement_no == 1
+slz_normalized$start_event <- slz_normalized$measurement_no == 1
+
 
 # linear modal with a1c
 f0_base <- mgcv::bam(
     formula = f0z ~ Phonation, 
-    data = slz_low,
+    data = slz_normalized,
     method = "fREML"
 )
 summary(f0_base)
@@ -37,7 +39,7 @@ gamm_f0 <- mgcv::bam(
         s(Speaker.f1, bs = "re") +
         s(Speaker.f1, Phonation, bs = "re") +
         te(measurement_no, Iter, by = Phonation, k = c(10,6)),
-    data = slz_low,
+    data = slz_normalized,
     method = "fREML"
 )
 summary(gamm_f0)
@@ -57,8 +59,8 @@ gamm_f0_ar1 <- mgcv::bam(
         s(Speaker.f1, Phonation, bs = "re") +
         te(measurement_no, Iter, by = Phonation, k = c(10,6)),
         rho = rho1,
-        AR.start = slz_low$start_event,
-    data = slz_low,
+        AR.start = slz_normalized$start_event,
+    data = slz_normalized,
     method = "fREML"
 )
 
